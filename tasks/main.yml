@@ -1,0 +1,126 @@
+---
+# tasks file for gateway
+
+
+  - name: Refresh subscription manager
+    command: subscription-manager refresh 
+
+
+  - name: Setting gateway within ifcfg-ens224
+    lineinfile:
+      dest: /etc/sysconfig/network-scripts/ifcfg-ens224
+      line: "GATEWAY={{ hostvars[inventory_hostname]['ansible_env'].SSH_CONNECTION.split(' ')[2] }}"
+      insertafter: EOF
+      create: yes
+
+  - name: Editing network service
+    blockinfile:
+      dest: /etc/sysconfig/network
+      block: |
+        NETWORKING=yes
+        HOSTNAME=nat
+        GATEWAY={{ hostvars[inventory_hostname]['ansible_env'].SSH_CONNECTION.split(' ')[2] }}
+
+
+  - name: Install the latest of iptables-services
+    ansible.builtin.yum:
+      name: iptables-services
+      state: latest
+
+
+
+  - name: Flushing table
+    command: "iptables -F"
+
+  - name: Flushing tables
+    command: "iptables -t {{ item }} -F"
+    loop: [ nat, mangle ]
+
+
+  - name: Deleting table
+    command: "iptables -X"
+
+  - name: Deleting tables
+    command: "iptables -t {{ item }} -X"
+    loop: [ nat, mangle ]
+
+
+  # - name: Iptables flush nat
+  #   ansible.builtin.iptables:
+  #     flush: yes
+
+  # - name: Iptables flush nat
+  #   ansible.builtin.iptables:
+  #     table: nat
+  #     flush: yes
+
+  # - name: Iptables flush mangle
+  #   ansible.builtin.iptables:
+  #     table: mangle
+  #     flush: yes
+
+
+  # - name: drop iptables
+  #   ansible.builtin.iptables:
+  #     chain: [POSTROUTING, INPUT, OUTPUT, PREROUTING, FORWARD]
+  #     state: absent
+
+  # - name: drop iptable mangle
+  #   ansible.builtin.iptables:
+  #     table: mangle
+  #     chain: [POSTROUTING, INPUT, OUTPUT, PREROUTING, FORWARD]
+  #     state: absent
+
+  # - name: drop iptable nat
+  #   ansible.builtin.iptables:
+  #     table: nat
+  #     chain: [POSTROUTING, INPUT, OUTPUT, PREROUTING, FORWARD]
+  #     state: absent
+
+  - name: Redirect web traffic to ens192
+    iptables:
+      table: nat
+      chain: POSTROUTING
+      out_interface: ens192
+      jump: MASQUERADE
+
+  - name: Redirect web traffic ens224
+    iptables:
+      chain: FORWARD
+      in_interface: ens224
+      jump: ACCEPT
+
+  - name: Setting ip forward to true
+    ansible.posix.sysctl:
+      name: net.ipv4.ip_forward
+      value: '1'
+      sysctl_set: yes
+      state: present
+      reload: yes
+ 
+  - name: permanent ip_forward
+    lineinfile:
+      dest: /etc/sysctl.conf
+      line: "net.ipv4.ip_forward=1"
+      insertafter: EOF
+      create: yes
+
+
+  - name: Save current state of the firewall in system file
+    community.general.iptables_state:
+      state: saved
+      path: /etc/sysconfig/iptables
+
+  - name: reloading iptables.service
+    service:
+      name: iptables.service
+      state: restarted    
+
+
+  - name: reloading network
+    service:
+      name: network
+      state: restarted
+
+
+

@@ -1,0 +1,16 @@
+---
+# vars file for gateway
+   iptables_config: |
+      iptables -F
+      iptables -t nat -F
+      iptables -t mangle -F
+
+      iptables -X
+      iptables -t nat -X
+      iptables -t mangle -X
+
+      iptables -t nat -A POSTROUTING -o ens192 -j MASQUERADE
+
+      iptables -A FORWARD -i ens160 -j ACCEPT
+      iptables -I INPUT -p tcp --dport 80 -j ACCEPT
+      COMMIT
