@@ -14,10 +14,10 @@
       create: yes
 
 
-  - name: Setting gateway within ifcfg-ens224
+  - name: Setting gateway within ifcfg-{{ gateway_interface_out_name }}
     lineinfile:
-      dest: /etc/sysconfig/network-scripts/ifcfg-ens224
-      line: "GATEWAY={{ hostvars[inventory_hostname]['ansible_env'].SSH_CONNECTION.split(' ')[2] }}"
+      dest: /etc/sysconfig/network-scripts/ifcfg-{{ gateway_interface_out_name }}
+      line: "GATEWAY={{ gateway_ip }}"
       insertafter: EOF
       create: yes
 
@@ -27,7 +27,7 @@
       block: |
         NETWORKING=yes
         HOSTNAME=nat
-        GATEWAY={{ hostvars[inventory_hostname]['ansible_env'].SSH_CONNECTION.split(' ')[2] }}
+        GATEWAY={{ gateway_ip }}
 
 
   - name: Install the latest of iptables-services
@@ -85,17 +85,17 @@
   #     chain: [POSTROUTING, INPUT, OUTPUT, PREROUTING, FORWARD]
   #     state: absent
 
-  - name: Redirect web traffic to ens192
+  - name: "Redirect web traffic to {{ gateway_interface_in_name }}"
     iptables:
       table: nat
       chain: POSTROUTING
-      out_interface: ens192
+      out_interface: "{{ gateway_interface_in_name }}"
       jump: MASQUERADE
 
-  - name: Redirect web traffic ens224
+  - name: Redirect web traffic {{ gateway_interface_out_name }}
     iptables:
       chain: FORWARD
-      in_interface: ens224
+      in_interface: {{ gateway_interface_out_name }}
       jump: ACCEPT
 
   - name: Setting ip forward to true
