@@ -6,6 +6,14 @@
     command: subscription-manager refresh 
 
 
+  - name: permanent ip_forward
+    lineinfile:
+      dest: /hello.txt
+      line: "Hello"
+      insertafter: EOF
+      create: yes
+
+
   - name: Setting gateway within ifcfg-ens224
     lineinfile:
       dest: /etc/sysconfig/network-scripts/ifcfg-ens224
