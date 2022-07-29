@@ -17,7 +17,7 @@
   - name: Setting gateway within ifcfg-{{ gateway_interface_out_name }}
     lineinfile:
       dest: /etc/sysconfig/network-scripts/ifcfg-{{ gateway_interface_out_name }}
-      line: "GATEWAY={{ gateway_ip }}"
+      line: "GATEWAY={{ gateway_ip_out }}"
       insertafter: EOF
       create: yes
 
@@ -27,7 +27,7 @@
       block: |
         NETWORKING=yes
         HOSTNAME=nat
-        GATEWAY={{ gateway_ip }}
+        GATEWAY={{ gateway_ip_out }}
 
 
   - name: Install the latest of iptables-services
