@@ -14,9 +14,9 @@
       create: yes
 
 
-  - name: Setting gateway within ifcfg-{{ gateway_interface_in_name }}
+  - name: "Setting gateway within ifcfg-{{ gateway_interface_in_name }}"
     lineinfile:
-      dest: /etc/sysconfig/network-scripts/ifcfg-{{ gateway_interface_in_name }}
+      dest: "/etc/sysconfig/network-scripts/ifcfg-{{ gateway_interface_in_name }}"
       line: "GATEWAY={{ gateway_ip_out }}"
       insertafter: EOF
       create: yes
@@ -90,7 +90,7 @@
       out_interface: "{{ gateway_interface_out_name }}"
       jump: MASQUERADE
 
-  - name: Redirect web traffic {{ gateway_interface_in_name }}"
+  - name: "Redirect web traffic {{ gateway_interface_in_name }}"
     iptables:
       chain: FORWARD
       in_interface: "{{ gateway_interface_in_name }}"
