@@ -14,9 +14,9 @@
       create: yes
 
 
-  - name: Setting gateway within ifcfg-{{ gateway_interface_out_name }}
+  - name: Setting gateway within ifcfg-{{ gateway_interface_in_name }}
     lineinfile:
-      dest: /etc/sysconfig/network-scripts/ifcfg-{{ gateway_interface_out_name }}
+      dest: /etc/sysconfig/network-scripts/ifcfg-{{ gateway_interface_in_name }}
       line: "GATEWAY={{ gateway_ip_out }}"
       insertafter: EOF
       create: yes
@@ -28,7 +28,6 @@
         NETWORKING=yes
         HOSTNAME=nat
         GATEWAY={{ gateway_ip_out }}
-
 
   - name: Install the latest of iptables-services
     ansible.builtin.yum:
@@ -85,17 +84,17 @@
   #     chain: [POSTROUTING, INPUT, OUTPUT, PREROUTING, FORWARD]
   #     state: absent
 
-  - name: "Redirect web traffic to {{ gateway_interface_in_name }}"
+  - name: "Redirect web traffic to {{ gateway_interface_out_name }}"
     iptables:
       table: nat
       chain: POSTROUTING
-      out_interface: "{{ gateway_interface_in_name }}"
+      out_interface: "{{ gateway_interface_out_name }}"
       jump: MASQUERADE
 
-  - name: Redirect web traffic {{ gateway_interface_out_name }}
+  - name: Redirect web traffic {{ gateway_interface_in_name }}"
     iptables:
       chain: FORWARD
-      in_interface: {{ gateway_interface_out_name }}
+      in_interface: "{{ gateway_interface_in_name }}"
       jump: ACCEPT
 
   - name: Setting ip forward to true
@@ -129,6 +128,4 @@
     service:
       name: network
       state: restarted
-
-
 
