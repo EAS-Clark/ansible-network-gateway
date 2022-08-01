@@ -22,12 +22,11 @@
       create: yes
 
   - name: Editing network service
-    blockinfile:
+    lineinfile:
       dest: /etc/sysconfig/network
-      block: |
-        NETWORKING=yes
-        HOSTNAME=nat
-        GATEWAY={{ gateway_ip_out }}
+      line: "GATEWAY={{ gateway_ip_out }}"
+
+
 
   - name: Install the latest of iptables-services
     ansible.builtin.yum:
