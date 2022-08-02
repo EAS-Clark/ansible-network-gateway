@@ -1,37 +1,24 @@
 ---
 # vars file for gateway
-   iptables_config: |
-      iptables -F
-      iptables -t nat -F
-      iptables -t mangle -F
+domainName: "clark"
 
-      iptables -X
-      iptables -t nat -X
-      iptables -t mangle -X
+gateway_ip: 10.0.0.1
+gateway_ip_out: 192.168.6.101
+gateway_mac: "00:50:56:87:44:14"
+gateway_interface_in_name: ens224
+gateway_interface_out_name: ens192
 
-      iptables -t nat -A POSTROUTING -o ens192 -j MASQUERADE
+dhcp_ip: 10.0.0.2
+dhcp_mac: sdfsdf
+dhcp_interface_in_name: ens224
 
-      iptables -A FORWARD -i ens160 -j ACCEPT
-      iptables -I INPUT -p tcp --dport 80 -j ACCEPT
-      COMMIT
+subnet: 10.0.0.0
+range_min: 10.0.0.10
+range_max: 10.0.0.50
 
-   domainName: "clark"
-
-   gateway_ip: 10.0.0.1
-   gateway_ip_out: 192.168.6.25
-   gateway_mac: "00:50:56:87:6c:09"
-   gateway_interface_in_name: ens224
-   gateway_interface_out_name: ens192
-
-   dhcp_ip: 10.0.0.2
-   dhcp_mac: sdfsdf
-   dhcp_interface_in_name: ens224
-
-   subnet: 10.0.0.0
-   range_min: 10.0.0.10
-   range_max: 10.0.0.50
-
-   dns_ip: 10.0.0.3
-   dns_mac: sdfsf
-   dns_interface_in_name: ens224
+dns_ip: 10.0.0.3
+dns_mac: "00:50:56:87:d9:99"
+dns_interface_in_name: ens224
     
+    
+

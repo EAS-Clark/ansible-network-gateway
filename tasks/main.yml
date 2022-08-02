@@ -17,14 +17,14 @@
   - name: "Setting gateway within ifcfg-{{ gateway_interface_in_name }}"
     lineinfile:
       dest: "/etc/sysconfig/network-scripts/ifcfg-{{ gateway_interface_in_name }}"
-      line: "GATEWAY={{ gateway_ip_out }}"
+      block: |
+        GATEWAY={{ gateway_ip_out }}
+        DEFROUTE=yes
+        DOMAIN={{ domainName }}
+        DNS1={{ dns_ip }}
       insertafter: EOF
       create: yes
 
-  - name: Editing network service
-    lineinfile:
-      dest: /etc/sysconfig/network
-      line: "GATEWAY={{ gateway_ip_out }}"
 
 
 
