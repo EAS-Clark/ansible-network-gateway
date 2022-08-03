@@ -15,7 +15,7 @@
 
 
   - name: "Setting gateway within ifcfg-{{ gateway_interface_in_name }}"
-    lineinfile:
+    blockinfile:
       dest: "/etc/sysconfig/network-scripts/ifcfg-{{ gateway_interface_in_name }}"
       block: |
         GATEWAY={{ gateway_ip_out }}
