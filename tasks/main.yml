@@ -20,7 +20,7 @@
       block: |
         GATEWAY={{ gateway_ip_out }}
         DEFROUTE=yes
-        DOMAIN={{ domainName }}
+        DOMAIN={{ domainName }}.local
         DNS1={{ dns_ip }}
       insertafter: EOF
       create: yes
