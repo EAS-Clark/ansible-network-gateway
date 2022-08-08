@@ -1,2 +1,52 @@
 ---
 # defaults file for gateway
+domain_name: "clark"
+domain_name_extension: "local"
+
+multi_mode: false
+
+gateway_ip: 10.0.0.1
+gateway_ip_last_octave: 3
+gateway_ip_out: 192.168.6.101
+gateway_mac: "00:50:56:87:79:f3"
+gateway_interface_in_name: ens224
+gateway_interface_out_name: ens192
+
+dhcp_ip: 10.0.0.2
+dhcp_ip_last_octave: 3
+dhcp_mac: sdfsdf
+dhcp_interface_in_name: ens224
+dhcp_interface_out_name: ens192
+
+subnet: 10.0.0.0
+range_min: 10.0.0.10
+range_max: 10.0.0.50
+three_octave: 10.0.0
+back_zone: 0.0.10
+
+dns_ip: 10.0.0.3
+dns_ip_last_octave: 3
+dns_mac: "00:50:56:87:47:7f"
+dns_interface_in_name: ens224
+dns_interface_out_name: ens192
+
+
+data:
+  - name: gateway
+    ip: 10.0.0.1
+    ip_out: 192.168.1.100
+    mac_address: 0:50:56:87:79:f3
+    interface_in_name: ens224
+    interface_out_name: ens192
+  - name: dhcp
+    ip: 10.0.0.2
+    mac_address: 0:50:56:87:79:f3
+    interface_in_name: ens224
+    interface_out_name: ens192
+  - name: dns
+    ip: 10.0.0.3
+    mac_address: 0:50:56:87:79:f3
+    interface_in_name: ens224
+    interface_out_name: ens192
+    
+
