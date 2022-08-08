@@ -1,39 +1,24 @@
 ---
 # tasks file for gateway
 
-
   - name: Refresh subscription manager
     command: subscription-manager refresh 
 
-
-  - name: permanent ip_forward
-    lineinfile:
-      dest: /hello.txt
-      line: "Hello"
-      insertafter: EOF
-      create: yes
-
-
-  - name: "Setting gateway within ifcfg-{{ gateway_interface_in_name }}"
+  - name: "Setting gateway within ifcfg-{{ data[0].interface_in_name }}"
     blockinfile:
-      dest: "/etc/sysconfig/network-scripts/ifcfg-{{ gateway_interface_in_name }}"
+      dest: "/etc/sysconfig/network-scripts/ifcfg-{{ data[0].interface_in_name }}"
       block: |
-        GATEWAY={{ gateway_ip_out }}
+        GATEWAY={{ data[0].ip_out }}
         DEFROUTE=yes
-        DOMAIN={{ domainName }}.local
-        DNS1={{ dns_ip }}
+        DOMAIN={{ domain_name }}.{{ domain_name_extension }}
+        DNS1={{ data[2].ip }}
       insertafter: EOF
       create: yes
-
-
-
 
   - name: Install the latest of iptables-services
     ansible.builtin.yum:
       name: iptables-services
       state: latest
-
-
 
   - name: Flushing table
     command: "iptables -F"
@@ -42,7 +27,6 @@
     command: "iptables -t {{ item }} -F"
     loop: [ nat, mangle ]
 
-
   - name: Deleting table
     command: "iptables -X"
 
@@ -50,50 +34,17 @@
     command: "iptables -t {{ item }} -X"
     loop: [ nat, mangle ]
 
-
-  # - name: Iptables flush nat
-  #   ansible.builtin.iptables:
-  #     flush: yes
-
-  # - name: Iptables flush nat
-  #   ansible.builtin.iptables:
-  #     table: nat
-  #     flush: yes
-
-  # - name: Iptables flush mangle
-  #   ansible.builtin.iptables:
-  #     table: mangle
-  #     flush: yes
-
-
-  # - name: drop iptables
-  #   ansible.builtin.iptables:
-  #     chain: [POSTROUTING, INPUT, OUTPUT, PREROUTING, FORWARD]
-  #     state: absent
-
-  # - name: drop iptable mangle
-  #   ansible.builtin.iptables:
-  #     table: mangle
-  #     chain: [POSTROUTING, INPUT, OUTPUT, PREROUTING, FORWARD]
-  #     state: absent
-
-  # - name: drop iptable nat
-  #   ansible.builtin.iptables:
-  #     table: nat
-  #     chain: [POSTROUTING, INPUT, OUTPUT, PREROUTING, FORWARD]
-  #     state: absent
-
-  - name: "Redirect web traffic to {{ gateway_interface_out_name }}"
+  - name: "Redirect web traffic to {{ data[0].interface_out_name }}"
     iptables:
       table: nat
       chain: POSTROUTING
-      out_interface: "{{ gateway_interface_out_name }}"
+      out_interface: "{{ data[0].interface_out_name }}"
       jump: MASQUERADE
 
-  - name: "Redirect web traffic {{ gateway_interface_in_name }}"
+  - name: "Redirect web traffic {{ data[0].interface_in_name }}"
     iptables:
       chain: FORWARD
-      in_interface: "{{ gateway_interface_in_name }}"
+      in_interface: "{{ data[0].interface_in_name }}"
       jump: ACCEPT
 
   - name: Setting ip forward to true
@@ -111,7 +62,6 @@
       insertafter: EOF
       create: yes
 
-
   - name: Save current state of the firewall in system file
     community.general.iptables_state:
       state: saved
@@ -121,7 +71,6 @@
     service:
       name: iptables.service
       state: restarted    
-
 
   - name: reloading network
     service:
