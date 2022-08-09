@@ -4,14 +4,14 @@
   - name: Refresh subscription manager
     command: subscription-manager refresh 
 
-  - name: "Setting gateway within ifcfg-{{ data[0].interface_in_name | default('default_value') }}"
+  - name: "Setting gateway within ifcfg-{{ data[0].interface_in_name }}"
     blockinfile:
-      dest: "/etc/sysconfig/network-scripts/ifcfg-{{ data[0].interface_in_name | default('default_value') }}"
+      dest: "/etc/sysconfig/network-scripts/ifcfg-{{ data[0].interface_in_name }}"
       block: |
-        GATEWAY={{ data[0].ip_out | default('default_value') }}
+        GATEWAY={{ data[0].ip_out }}
         DEFROUTE=yes
-        DOMAIN={{ domain_name | default('default_value') }}.{{ domain_name_extension | default('default_value') }}
-        DNS1={{ data[2].ip | default('default_value') }}
+        DOMAIN={{ domain_name }}.{{ domain_name_extension }}
+        DNS1={{ data[2].ip }}
       insertafter: EOF
       create: yes
 
@@ -34,17 +34,17 @@
     command: "iptables -t {{ item }} -X"
     loop: [ nat, mangle ]
 
-  - name: "Redirect web traffic to {{ data[0].interface_out_name | default('default_value') }}"
+  - name: "Redirect web traffic to {{ data[0].interface_out_name }}"
     iptables:
       table: nat
       chain: POSTROUTING
-      out_interface: "{{ data[0].interface_out_name | default('default_value') }}"
+      out_interface: "{{ data[0].interface_out_name }}"
       jump: MASQUERADE
 
-  - name: "Redirect web traffic {{ data[0].interface_in_name | default('default_value') }}"
+  - name: "Redirect web traffic {{ data[0].interface_in_name }}"
     iptables:
       chain: FORWARD
-      in_interface: "{{ data[0].interface_in_name | default('default_value') }}"
+      in_interface: "{{ data[0].interface_in_name }}"
       jump: ACCEPT
 
   - name: Setting ip forward to true
