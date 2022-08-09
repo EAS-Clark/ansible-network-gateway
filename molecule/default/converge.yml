@@ -5,3 +5,8 @@
     - name: "Include clark.gateway"
       include_role:
         name: "clark.gateway"
+
+    - name: Removing ens192
+      community.general.nmcli:
+        conn_name: ens192
+        state: absent
